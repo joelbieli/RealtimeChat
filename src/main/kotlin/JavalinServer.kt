@@ -14,7 +14,12 @@ class JavalinServer (httpPort: Int) {
         javalin?.routes {
             path("api") {
                 path("users") {
-                    post(userHandler::registerNewUser)
+                    path("login") {
+                        post(userHandler::login)
+                    }
+                    path("register") {
+                        post(userHandler::registerNew)
+                    }
                 }
             }
         }

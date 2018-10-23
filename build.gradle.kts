@@ -17,6 +17,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", "2.9.7")
     implementation("org.litote.kmongo", "kmongo", "3.8.3")
     implementation("org.mindrot", "jbcrypt", "0.4")
+    implementation("com.auth0", "java-jwt", "3.4.0")
+    implementation("io.github.microutils", "kotlin-logging", "1.6.10")
+    implementation("com.kstruct", "gethostname4j", "0.0.2")
 
     testImplementation("org.jetbrains.spek", "spek-api", "1.1.5")
     testImplementation("org.jetbrains.spek", "spek-junit-platform-engine", "1.1.5")

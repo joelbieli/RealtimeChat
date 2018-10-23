@@ -1,33 +1,30 @@
 package user
 
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.mindrot.jbcrypt.BCrypt
+import utils.sign
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 class User (
-        var _id: Id<String>,
-        var firstName: String,
-        var lastName: String,
-        var displayName: String,
-        var status: String,
-        var email: String,
-        password: String
-) {
+        var displayName: String = "",
+        var status: String = "",
+        var firstName: String = "",
+        var lastName: String = "",
+        var email: String = "",
+        var jwt: String = if (email.isBlank()) "" else sign(email),
+        var password: String = ""
+        ) {
     var hash: String = BCrypt.hashpw(password, BCrypt.gensalt())
 
     fun checkPW(pw: String): Boolean {
-        return BCrypt.checkpw(hash, pw)
+        return BCrypt.checkpw(pw, hash)
     }
 
-    object Mapper {
-        fun from(newUser: NewUser) = User(
-                newId(),
-                newUser.firstName,
-                newUser.lastName,
-                newUser.displayName,
-                newUser.status,
-                newUser.email,
-                newUser.password
-        )
+    fun toFrontendUser(): User {
+        return User(this.displayName, this.status)
+    }
+
+    fun toResponseUser(): User {
+        return User(this.displayName, this.status, this.firstName, this.lastName, this.email)
     }
 }
