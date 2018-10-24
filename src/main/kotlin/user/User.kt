@@ -1,6 +1,9 @@
 package user
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import org.mindrot.jbcrypt.BCrypt
 import utils.sign
 
@@ -12,7 +15,7 @@ class User (
         var lastName: String = "",
         var email: String = "",
         var jwt: String = if (email.isBlank()) "" else sign(email),
-        var password: String = ""
+        @JsonIgnore var password: String = ""
         ) {
     var hash: String = BCrypt.hashpw(password, BCrypt.gensalt())
 

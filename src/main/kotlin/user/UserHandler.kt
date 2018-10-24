@@ -1,15 +1,17 @@
 package user
 
 import io.javalin.Context
+import io.jsonwebtoken.Jws
 import mdbcl
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
+import utils.verify
 
 class UserHandler {
     fun registerNew(ctx: Context) {
         if (!ctx.body().isBlank()) {
             val newUserData = ctx.body<User>()
-            val existingUser = mdbcl.users.findOne(User::email eq newUserData.email)
+            val existingUser = findUserByEmail(newUserData)
 
             if (existingUser == null) {
                 newUser(newUserData)
@@ -30,11 +32,11 @@ class UserHandler {
 
     fun login(ctx: Context) {
         if (!ctx.body().isBlank()) {
-            val newUserData = ctx.body<User>()
-            val existingUser = mdbcl.users.findOne(User::email eq newUserData.email)
+            val userToLogIn = ctx.body<User>()
+            val existingUser = findUserByEmail(userToLogIn)
 
             if (existingUser != null) {
-                if (existingUser.checkPW(newUserData.password)) {
+                if (existingUser.checkPW(userToLogIn.password)) {
                     ctx.status(200).json(existingUser.toResponseUser())
                     return
                 }
@@ -49,7 +51,21 @@ class UserHandler {
         }
     }
 
-    fun getUserInfo(ctx: Context) {
+    fun editUser(ctx: Context) {
+        if (!ctx.body().isBlank()) {
+            val alteredUser = ctx.body<User>()
+            val decodedToken = verify(alteredUser.jwt)
 
+            if (decodedToken != null) {
+                updateUser(alteredUser)
+                ctx.status(200).result("User successfully updated")
+            } else {
+                ctx.status(401).result("Couldn't verify authenticity of requester")
+            }
+
+            ctx.status(400).result("Invalid password")
+        } else {
+            ctx.status(400).result("No request body found")
+        }
     }
 }

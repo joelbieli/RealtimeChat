@@ -1,0 +1,4 @@
+package chat
+
+class Chat {
+}

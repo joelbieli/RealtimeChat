@@ -20,6 +20,9 @@ class JavalinServer (httpPort: Int) {
                     path("register") {
                         post(userHandler::registerNew)
                     }
+                    path("edit") {
+                        post(userHandler::editUser)
+                    }
                 }
             }
         }

@@ -1,40 +1,31 @@
 package utils
 
-import com.auth0.jwt.exceptions.JWTCreationException
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
-import com.kstruct.gethostname4j.Hostname.getHostname
 import logger
-import com.auth0.jwt.exceptions.JWTVerificationException
-import com.auth0.jwt.interfaces.DecodedJWT
+import java.io.File
+import com.kstruct.gethostname4j.Hostname.getHostname
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
+import io.jsonwebtoken.JwtException
+import io.jsonwebtoken.Jwts
 
-private const val secret = "x/A?D(G+KbPdSgVk"
+private val secret = KeyUtils.getKey(File("./src/main/resources/secret.key"))
 
 fun sign(email: String): String {
-    var token: String? = null
-
-    try {
-        token = JWT.create()
-                .withClaim("email", email)
-                .withIssuer(getHostname())
-                .sign(Algorithm.HMAC256(secret))
-    } catch (exception: JWTCreationException) {
-        logger.error(exception) { "An error occurred during JWT signing" }
-    }
-
-    return token!!
+    return Jwts.builder()
+            .setIssuer(System.getProperty("os.arch") + "_" + getHostname())
+            .setSubject(email)
+            .signWith(secret)
+            .compact()!!
 }
 
-fun verify(token: String): DecodedJWT {
-    var decodedJWT: DecodedJWT? = null
+fun verify(token: String): Jws<Claims>? {
+    val decodedJWT: Jws<Claims>?
 
     try {
-        decodedJWT = JWT.require(Algorithm.HMAC256(secret))
-                .withIssuer(getHostname())
-                .build()
-                .verify(token)
-    } catch (exception: JWTVerificationException) {
-        logger.error(exception) { "An error occurred during JWT verification" }
+        decodedJWT = Jwts.parser().setSigningKey(secret).parseClaimsJws(token)
+    } catch (jwtEx: JwtException) {
+        logger.error(jwtEx) { "An error occurred during JWT verification" }
+        return null
     }
 
     return decodedJWT!!
