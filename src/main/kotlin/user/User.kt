@@ -1,7 +1,8 @@
 package user
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.bson.codecs.pojo.annotations.BsonId
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.mindrot.jbcrypt.BCrypt
@@ -14,20 +15,24 @@ class User (
         var firstName: String = "",
         var lastName: String = "",
         var email: String = "",
-        var jwt: String = if (email.isBlank()) "" else sign(email),
-        @JsonIgnore var password: String = ""
+        @BsonId
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        val _id: Id<String>? = null,
+        var jwt: String = if (_id != null) sign(_id) else "",
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        var password: String = ""
         ) {
-    var hash: String = BCrypt.hashpw(password, BCrypt.gensalt())
+    var hash: String = if (!password.isBlank()) BCrypt.hashpw(password, BCrypt.gensalt()) else ""
 
     fun checkPW(pw: String): Boolean {
         return BCrypt.checkpw(pw, hash)
     }
 
     fun toFrontendUser(): User {
-        return User(this.displayName, this.status)
+        return User(this.displayName, this.status, _id = newId())
     }
 
     fun toResponseUser(): User {
-        return User(this.displayName, this.status, this.firstName, this.lastName, this.email)
+        return User(this.displayName, this.status, this.firstName, this.lastName, this.email, _id = this._id)
     }
 }

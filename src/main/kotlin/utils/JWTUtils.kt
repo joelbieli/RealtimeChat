@@ -7,13 +7,15 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
+import org.litote.kmongo.Id
+import org.litote.kmongo.util.idValue
 
 private val secret = KeyUtils.getKey(File("./src/main/resources/secret.key"))
 
-fun sign(email: String): String {
+fun sign(_id: Id<String>): String {
     return Jwts.builder()
             .setIssuer(System.getProperty("os.arch") + "_" + getHostname())
-            .setSubject(email)
+            .setSubject(_id.toString())
             .signWith(secret)
             .compact()!!
 }

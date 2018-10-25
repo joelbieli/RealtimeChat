@@ -5,21 +5,22 @@ import io.jsonwebtoken.Jws
 import mdbcl
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
+import org.litote.kmongo.util.idValue
 import utils.verify
 
 class UserHandler {
     fun registerNew(ctx: Context) {
         if (!ctx.body().isBlank()) {
             val newUserData = ctx.body<User>()
-            val existingUser = findUserByEmail(newUserData)
+            val existingUser = findUserByEmail(newUserData.email)
 
             if (existingUser == null) {
                 newUser(newUserData)
-                ctx.status(201).json(newUserData.toResponseUser())
+                ctx.status(201).json(findUserByEmail(newUserData.email)?.toResponseUser()!!)
                 return
             } else {
                 if (existingUser.checkPW(newUserData.password)) {
-                    ctx.status(200).json(newUserData.toResponseUser())
+                    ctx.status(200).json(findUserByEmail(newUserData.email)?.toResponseUser()!!)
                     return
                 }
             }
@@ -33,7 +34,7 @@ class UserHandler {
     fun login(ctx: Context) {
         if (!ctx.body().isBlank()) {
             val userToLogIn = ctx.body<User>()
-            val existingUser = findUserByEmail(userToLogIn)
+            val existingUser = findUserByEmail(userToLogIn.email)
 
             if (existingUser != null) {
                 if (existingUser.checkPW(userToLogIn.password)) {
@@ -57,13 +58,18 @@ class UserHandler {
             val decodedToken = verify(alteredUser.jwt)
 
             if (decodedToken != null) {
-                updateUser(alteredUser)
-                ctx.status(200).result("User successfully updated")
+                val oldUser = findUserById(decodedToken.body.subject)
+                val updatedUser = updateUser(alteredUser, oldUser!!)
+                if (updatedUser != null) {
+                    ctx.status(200).json(updatedUser)
+                } else {
+                    ctx.status(500).result("There was a problem updating the user document in the database.")
+                }
+                return
             } else {
                 ctx.status(401).result("Couldn't verify authenticity of requester")
+                return
             }
-
-            ctx.status(400).result("Invalid password")
         } else {
             ctx.status(400).result("No request body found")
         }
