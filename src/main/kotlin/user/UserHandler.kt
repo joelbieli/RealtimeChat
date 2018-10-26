@@ -32,6 +32,8 @@ class UserHandler {
     }
 
     fun login(ctx: Context) {
+        println(ctx.ip())
+
         if (!ctx.body().isBlank()) {
             val userToLogIn = ctx.body<User>()
             val existingUser = findUserByEmail(userToLogIn.email)

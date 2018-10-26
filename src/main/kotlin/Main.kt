@@ -1,4 +1,5 @@
 import mu.KotlinLogging
+import org.apache.commons.codec.binary.Base64
 
 val mdbcl = MongoDBClient("localhost", 27017)
 val jls = JavalinServer(7070)

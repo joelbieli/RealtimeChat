@@ -1,6 +1,7 @@
+import chat.ChatHandler
 import io.javalin.Javalin
-import io.javalin.apibuilder.ApiBuilder.path
-import io.javalin.apibuilder.ApiBuilder.post
+import io.javalin.apibuilder.ApiBuilder.*
+import message.MessageHandler
 import user.UserHandler
 
 class JavalinServer (httpPort: Int) {
@@ -10,6 +11,8 @@ class JavalinServer (httpPort: Int) {
         javalin = Javalin.create().enableDebugLogging().start(httpPort)
 
         val userHandler = UserHandler()
+        val messageHandler = MessageHandler()
+        val chatHandler = ChatHandler()
 
         javalin?.routes {
             path("api") {
@@ -21,7 +24,29 @@ class JavalinServer (httpPort: Int) {
                         post(userHandler::registerNew)
                     }
                     path("edit") {
-                        post(userHandler::editUser)
+                        patch(userHandler::editUser)
+                    }
+                }
+                path("messages") {
+                    path("new") {
+                        post(messageHandler::newMessage)
+                    }
+                    path("delete") {
+                        delete(messageHandler::deleteMessage)
+                    }
+                    path("edit") {
+                        patch(messageHandler::editMessage)
+                    }
+                }
+                path("chats") {
+                    path("new") {
+                        post(chatHandler::newChat)
+                    }
+                    path("delete") {
+                        delete(chatHandler::deleteChat)
+                    }
+                    path("edit") {
+                        patch(chatHandler::editChat)
                     }
                 }
             }
