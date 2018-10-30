@@ -1,3 +1,4 @@
+import org.gradle.internal.impldep.org.fusesource.jansi.AnsiRenderer.test
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -9,6 +10,7 @@ version = "1.0"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -23,14 +25,18 @@ dependencies {
     implementation("commons-codec", "commons-codec", "1.11")
     implementation("io.jsonwebtoken", "jjwt-api", "0.10.5")
 
+
     runtimeOnly("io.jsonwebtoken", "jjwt-impl", "0.10.5")
     runtimeOnly("io.jsonwebtoken", "jjwt-jackson", "0.10.5")
 
-    testImplementation("org.jetbrains.spek", "spek-api", "1.1.5")
-    testImplementation("org.jetbrains.spek", "spek-junit-platform-engine", "1.1.5")
-    testImplementation("junit", "junit", "4.12")
+
     testImplementation("org.junit.platform", "junit-platform-runner", "1.3.1")
+    testImplementation("org.junit.platform", "junit-platform-launcher", "1.3.1")
     testImplementation("org.junit.jupiter", "junit-jupiter-api", "5.3.1")
+    testImplementation("org.junit.jupiter", "junit-jupiter-engine", "5.3.1")
+    testImplementation("org.spekframework.spek2", "spek-dsl-jvm", "2.0.0-rc.1")
+    testImplementation("org.spekframework.spek2", "spek-runner-junit5", "2.0.0-rc.1")
+    testImplementation("org.amshove.kluent", "kluent", "1.42", "")
 
     compile(kotlin("stdlib-jdk8"))
 }
