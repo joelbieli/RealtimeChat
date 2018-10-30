@@ -27,7 +27,7 @@ fun findUserById(id: String): User? {
 }
 
 fun updateUser(alteredUser: User, oldUser: User): User? {
-    val updateSuccessful = mdbcl.users.updateOneById(oldUser._id!!, oldUser merge alteredUser).wasAcknowledged()
+    val updateSuccessful = mdbcl.users.updateOneById(oldUser._id, oldUser merge alteredUser).wasAcknowledged()
     return if (updateSuccessful) {
         mdbcl.users.findOneById(oldUser._id)
     } else {
