@@ -5,7 +5,7 @@ import message.MessageHandler
 import user.UserHandler
 
 class JavalinServer (httpPort: Int) {
-    var javalin: Javalin? = null
+    var javalin: Javalin? = Javalin.create().enableDebugLogging().start(httpPort)
 
     init {
         javalin = Javalin.create().enableDebugLogging().start(httpPort)
@@ -17,36 +17,39 @@ class JavalinServer (httpPort: Int) {
         javalin?.routes {
             path("api") {
                 path("users") {
-                    path("login") {
-                        post(userHandler::login)
-                    }
-                    path("register") {
-                        post(userHandler::registerNew)
-                    }
-                    path("edit") {
-                        patch(userHandler::editUser)
-                    }
+                    path("login") { post(userHandler::login) }
+                    path("register") { post(userHandler::registerNew) }
+                    path("edit") { patch(userHandler::editUser) }
                 }
-                path("messages") {
-                    path("new") {
-                        post(messageHandler::newMessage)
+                path(":jwt") {
+                    path("messages") {
+                        path("new") { post(messageHandler::newMessage) }
+                        path("delete") { delete(messageHandler::deleteMessage) }
+                        path("edit") {
+                            path("") {  }
+                            patch(messageHandler::editMessage)
+                        }
                     }
-                    path("delete") {
-                        delete(messageHandler::deleteMessage)
-                    }
-                    path("edit") {
-                        patch(messageHandler::editMessage)
-                    }
-                }
-                path("chats") {
-                    path("new") {
-                        post(chatHandler::newChat)
-                    }
-                    path("delete") {
-                        delete(chatHandler::deleteChat)
-                    }
-                    path("edit") {
-                        patch(chatHandler::editChat)
+                    path("chats") {
+                        path("new") { post(chatHandler::newChat) }
+                        path(":chatId") {
+                            path("delete") { delete(chatHandler::deleteChat) }
+                            path("edit") {
+                                path("member") {
+                                    path(":userId") {
+                                        post(chatHandler::addMember)
+                                        delete(chatHandler::removeMember)
+                                    }
+                                }
+                                path("message") {
+                                    path(":messageId") {
+                                        post(chatHandler::addMessage)
+                                        delete(chatHandler::removeMessage)
+                                    }
+                                }
+                                path("title") { patch(chatHandler::updateTitle) }
+                            }
+                        }
                     }
                 }
             }

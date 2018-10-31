@@ -32,8 +32,6 @@ class UserHandler {
     }
 
     fun login(ctx: Context) {
-        println(ctx.ip())
-
         if (!ctx.body().isBlank()) {
             val userToLogIn = ctx.body<User>()
             val existingUser = findUserByEmail(userToLogIn.email)
@@ -65,7 +63,7 @@ class UserHandler {
                 if (updatedUser != null) {
                     ctx.status(200).json(updatedUser)
                 } else {
-                    ctx.status(500).result("There was a problem updating the user document in the database.")
+                    ctx.status(500).result("There was a problem updating the user document in the database")
                 }
                 return
             } else {
