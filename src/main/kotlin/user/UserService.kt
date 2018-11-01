@@ -1,36 +1,34 @@
 package user
 
+import com.mongodb.client.model.UpdateOptions
 import mdbcl
-import message.Message
 import org.litote.kmongo.*
 import org.litote.kmongo.id.WrappedObjectId
-import utils.merge
 
-fun newUser(user: User) {
+fun newUser(user: MDBUser) {
     mdbcl.users.insertOne(user)
 }
 
 fun deleteUser(userId: Id<String>): Boolean {
-    return mdbcl.users.deleteOneById(userId).wasAcknowledged()
+    return mdbcl.users.deleteOneById(id = userId).wasAcknowledged()
 }
 
-fun getMembers(members: List<Id<String>>): List<User> {
-    return mdbcl.users.find(User::_id `in` members.asIterable()).toList()
+fun getUsers(members: List<Id<String>>): List<MDBUser> {
+    return mdbcl.users.find(MDBUser::_id `in` members.asIterable()).toList()
 }
 
-fun findUserByEmail(email: String): User? {
-    return mdbcl.users.findOne(User::email eq email)
+fun findUserByEmail(email: String): MDBUser? {
+    return mdbcl.users.findOne(MDBUser::email eq email)
 }
 
-fun findUserById(id: String): User? {
-    return mdbcl.users.findOneById(WrappedObjectId<String>(id))
+fun findUserById(id: Id<String>): MDBUser? {
+    return mdbcl.users.findOneById(id)
 }
 
-fun updateUser(alteredUser: User, oldUser: User): User? {
-    val updateSuccessful = mdbcl.users.updateOneById(oldUser._id, oldUser merge alteredUser).wasAcknowledged()
-    return if (updateSuccessful) {
-        mdbcl.users.findOneById(oldUser._id)
-    } else {
-        null
-    }
+fun updateDisplayName(userId: Id<String>, newDisplayName: String): Boolean {
+    return mdbcl.users.updateOneById(userId, set(MDBUser::displayName, newDisplayName)).wasAcknowledged()
+}
+
+fun updateStatus(userId: Id<String>, newStatus: String): Boolean {
+    return mdbcl.users.updateOneById(userId, set(MDBUser::status, newStatus)).wasAcknowledged()
 }

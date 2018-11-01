@@ -1,19 +1,18 @@
 package chat
 
 import io.javalin.Context
-import org.apache.commons.codec.binary.Base64
-import org.litote.kmongo.toId
+import utils.Base64Utils
 import utils.verify
 
 class ChatHandler {
     fun newChat(ctx: Context) {
         if (!ctx.pathParam("jwt").isBlank()) {
             if (!ctx.body().isBlank()) {
-                val chatToAdd = ctx.body<Chat>()
+                val newChat = ctx.body<NewChat>()
                 val decodedToken = verify(ctx.pathParam("jwt"))
 
                 if (decodedToken != null) {
-                    newChat(chatToAdd)
+                    newChat(newChat.toMDBChat())
                     ctx.status(201).result("Chat was created")
                     return
                 } else {
@@ -33,11 +32,11 @@ class ChatHandler {
     fun deleteChat(ctx: Context) {
         if (!ctx.pathParam("jwt").isBlank()) {
             if (!ctx.pathParam("chatId").isBlank()) {
-                val chatToDelete = Base64().decode(ctx.pathParam("chatId")).toString()
+                val chatToDelete = Base64Utils.decodeStringToId(ctx.pathParam("chatId"))
                 val decodedToken = verify(ctx.pathParam("jwt"))
 
                 if (decodedToken != null) {
-                    if (deleteChat(chatToDelete.toId())) {
+                    if (deleteChat(chatToDelete)) {
                         ctx.status(200).result("Chat was deleted")
                         return
                     } else {
@@ -62,8 +61,8 @@ class ChatHandler {
         if (!ctx.pathParam("jwt").isBlank()) {
             if (!ctx.pathParam("chatId").isBlank()) {
                 if (!ctx.pathParam("userId").isBlank()) {
-                    val userToAdd = Base64().decode(ctx.pathParam("userId")).toString().toId<String>()
-                    val chatToAddMember = Base64().decode(ctx.pathParam("chatId")).toString().toId<String>()
+                    val userToAdd = Base64Utils.decodeStringToId(ctx.pathParam("userId"))
+                    val chatToAddMember = Base64Utils.decodeStringToId(ctx.pathParam("chatId"))
                     val decodedToken = verify(ctx.pathParam("jwt"))
 
                     if (decodedToken != null) {
@@ -96,8 +95,8 @@ class ChatHandler {
         if (!ctx.pathParam("jwt").isBlank()) {
             if (!ctx.pathParam("chatId").isBlank()) {
                 if (!ctx.pathParam("userId").isBlank()) {
-                    val userToAdd = Base64().decode(ctx.pathParam("userId")).toString().toId<String>()
-                    val chatToAddMember = Base64().decode(ctx.pathParam("chatId")).toString().toId<String>()
+                    val userToAdd = Base64Utils.decodeStringToId(ctx.pathParam("userId"))
+                    val chatToAddMember = Base64Utils.decodeStringToId(ctx.pathParam("chatId"))
                     val decodedToken = verify(ctx.pathParam("jwt"))
 
                     if (decodedToken != null) {
@@ -126,38 +125,21 @@ class ChatHandler {
         }
     }
 
-
-    //TODO: remove as this should be handled by the message handler
-    fun addMessage(ctx: Context) {
-        if (!ctx.pathParam("jwt").isBlank()) {
-
-        } else {
-            ctx.status(401).result("No authentication token provided")
-            return
-        }
-    }
-
-    //TODO: remove as this should be handled by the message handler
-    fun removeMessage(ctx: Context) {
-        if (!ctx.pathParam("jwt").isBlank()) {
-
-        } else {
-            ctx.status(401).result("No authentication token provided")
-            return
-        }
-    }
-
     fun updateTitle(ctx: Context) {
         if (!ctx.pathParam("jwt").isBlank()) {
             if (!ctx.pathParam("chatId").isBlank()) {
                 if (!ctx.body().isBlank()) {
-                    val title = ctx.bodyAsClass(AbstractMutableMap<String, String>)
-                    val chatToAddMember = Base64().decode(ctx.pathParam("chatId")).toString().toId<String>()
+                    val updateInfo = ctx.body<Map<String, String>>()
+                    val chatId = Base64Utils.decodeStringToId(ctx.pathParam("chatId"))
                     val decodedToken = verify(ctx.pathParam("jwt"))
 
                     if (decodedToken != null) {
-                        if (removeMember(chatToAddMember, userToAdd)) {
-                            ctx.status(200).result("Member was successfully removed")
+                        if (updateInfo["newTitle"] == null) {
+                            ctx.status(400).result("No title provided")
+                            return
+                        }
+                        if (updateTitle(chatId, updateInfo["newTitle"]!!)) {
+                            ctx.status(200).result("Title was successfully updated")
                             return
                         } else {
                             ctx.status(500).result("There was a server-side problem removing the member")

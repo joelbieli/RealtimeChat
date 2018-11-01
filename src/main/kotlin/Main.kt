@@ -1,10 +1,9 @@
 import mu.KotlinLogging
-import org.apache.commons.codec.binary.Base64
 
-val mdbcl = MongoDBClient("localhost", 27017)
-val jls = JavalinServer(7070)
-val logger = KotlinLogging.logger {}
+val mdbcl = MongoDBClient("localhost", 27017) // immutable instance of MongoDBClient - the database connection
+val jls = JavalinServer(7070) // immutable instance of JavalinServer - launches the webserver
+val logger = KotlinLogging.logger {} // simple logger for printing possible problems in the program
 
 fun main(args: Array<String>) {
-    println("sup")
+    logger.info("Program stared")
 }

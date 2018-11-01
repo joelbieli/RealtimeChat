@@ -9,7 +9,7 @@ import org.mindrot.jbcrypt.BCrypt
 import utils.sign
 
 object UserTest: Spek({
-    val user = User("jdoe", "some status", "John", "Doe", "john.doe@example.com", password = "abc123.-")
+    val user = User_old("jdoe", "some status", "John", "Doe", "john.doe@example.com", password = "abc123.-")
 
     describe("The user class") {
         context("created a new user with primary constructor") {
