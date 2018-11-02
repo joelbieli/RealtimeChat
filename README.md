@@ -26,7 +26,7 @@ The following libraries were used to construct the backend.
 
 - [Kluent](https://markusamshove.github.io/Kluent/)
 
-##Visualisations
+## Visualisations
 
 [Class Diagram](https://www.lucidchart.com/invitations/accept/9d59de55-f09f-4bf2-bcd9-791f99fa96ca) - [this](https://www.lucidchart.com/pages/uml-class-diagram) style guide was used for creating the diagram
 
