@@ -28,10 +28,10 @@ class FrontendChat(
         messages: List<Id<String>>,
         _id: Id<String>
 ): Chat {
-    val admin: String = Base64Utils.encodeIdToString(admin)
-    val members: List<String> = members.map { Base64Utils.encodeIdToString(it) }
-    val messages: List<FrontendMessage> = getFrontendMessages(messages)
-    val frontendId: String = Base64Utils.encodeIdToString(_id)
+    private val admin: String = Base64Utils.encodeIdToString(admin)
+    private val members: List<String> = members.map { Base64Utils.encodeIdToString(it) }
+    private val messages: List<FrontendMessage> = getFrontendMessages(messages)
+    private val frontendId: String = Base64Utils.encodeIdToString(_id)
 
     /**
      * This method converts this FrontendChat object to a MDBChat

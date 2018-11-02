@@ -15,8 +15,8 @@ import utils.Base64Utils
 class NewChat(
         override val title: String,
         type: String,
-        val admin: String = "",
-        val members: List<String>
+        private val admin: String = "",
+        private val members: List<String>
 ): Chat {
     override val type: ChatType = ChatType.valueOf(type)
 

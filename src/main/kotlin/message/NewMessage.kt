@@ -18,8 +18,8 @@ class NewMessage (
         override val text: String,
         timestamp: Long,
         override val edited: Boolean,
-        val author: String,
-        val chatId: String
+        private val author: String,
+        private val chatId: String
 ): Message {
     override val timestamp: Instant = Instant.ofEpochMilli(timestamp)
 

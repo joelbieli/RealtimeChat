@@ -2,16 +2,16 @@ package utils
 
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
-import javax.crypto.spec.SecretKeySpec
 import org.apache.commons.codec.DecoderException
 import org.apache.commons.codec.binary.Hex.decodeHex
 import org.apache.commons.codec.binary.Hex.encodeHex
 import org.apache.commons.io.FileUtils.readFileToByteArray
 import org.apache.commons.io.FileUtils.writeStringToFile
-import java.io.IOException
 import java.io.File
+import java.io.IOException
 import java.nio.charset.StandardCharsets
 import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * This singleton object has some helper functions for handling the secret key used for the JWTs

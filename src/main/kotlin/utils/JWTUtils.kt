@@ -1,14 +1,13 @@
 package utils
 
-import logger
-import java.io.File
 import com.kstruct.gethostname4j.Hostname.getHostname
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
+import logger
 import org.litote.kmongo.Id
-import org.litote.kmongo.util.idValue
+import java.io.File
 
 /**
  * This singleton object has two helper functions for creating/signing and decoding/verifying a JWT

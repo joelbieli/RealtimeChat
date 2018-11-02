@@ -26,8 +26,8 @@ class FrontendMessage(
         chatId: Id<String>,
         _id: Id<String>
 ): Message {
-    val author: String = Base64Utils.encodeIdToString(author)
-    val chatId: String = Base64Utils.encodeIdToString(chatId)
+    private val author: String = Base64Utils.encodeIdToString(author)
+    private val chatId: String = Base64Utils.encodeIdToString(chatId)
     val frontendId: String = Base64Utils.encodeIdToString(_id)
 
     /**

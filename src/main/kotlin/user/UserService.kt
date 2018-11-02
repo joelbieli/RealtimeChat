@@ -1,9 +1,7 @@
 package user
 
-import com.mongodb.client.model.UpdateOptions
 import mdbcl
 import org.litote.kmongo.*
-import org.litote.kmongo.id.WrappedObjectId
 
 /**
  * Creates a new user in the database
