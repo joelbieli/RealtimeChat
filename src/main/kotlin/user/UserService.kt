@@ -34,6 +34,31 @@ fun getUsers(users: List<Id<String>>): List<MDBUser> {
     return mdbcl.users.find(MDBUser::_id `in` users.asIterable()).toList()
 }
 
+
+/**
+ * Adds the specified associate to the specified users associations
+ *
+ * @param userId The user to which to add the association
+ * @param associateId The associate to add to the associations
+ *
+ * @return Whether the operation was successful
+ */
+fun addAssociation(userId: Id<String>, associateId: Id<String>): Boolean {
+    return mdbcl.users.updateOneById(userId, push(MDBUser::associations, associateId)).wasAcknowledged()
+}
+
+/**
+ * Removes the specified associate from the specified users associations
+ *
+ * @param userId The user from which to remove the association
+ * @param associateId The associate to remove to the associations
+ *
+ * @return Whether the operation was successful
+ */
+fun removeAssociation(userId: Id<String>, associateId: Id<String>): Boolean {
+    return mdbcl.users.updateOneById(userId, pull(MDBUser::associations, associateId)).wasAcknowledged()
+}
+
 /**
  * Gets the user with the specified email
  *

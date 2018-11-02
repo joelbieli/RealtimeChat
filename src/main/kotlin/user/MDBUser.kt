@@ -5,6 +5,7 @@ import org.bson.codecs.pojo.annotations.BsonId
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.mindrot.jbcrypt.BCrypt
+import utils.Base64Utils
 
 /**
  * The class which is read, write and update the users collection of the database
@@ -14,6 +15,7 @@ import org.mindrot.jbcrypt.BCrypt
  * @property firstName The first name of the user
  * @property lastName The last name of the user
  * @property email The email address of the user
+ * @property associations Every users id the user is in some way associated with
  * @property _id The id of the user
  * @property password The password of the user (only used when the user is first created, not actually stored)
  * @property hash The hashed password
@@ -24,6 +26,7 @@ class MDBUser(
         private val firstName: String,
         private val lastName: String,
         val email: String,
+        val associations: List<Id<String>> = listOf(),
         @BsonId val _id: Id<String> = newId(),
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         val password: String = "",
@@ -57,6 +60,13 @@ class MDBUser(
      * This method converts this MDBUser object to a ResponseUser
      */
     fun toResponseUser(): ResponseUser {
-        return ResponseUser(this.displayName, this.status, this.firstName, this.lastName, this.email, this._id)
+        return ResponseUser(
+                this.displayName,
+                this.status,
+                this.firstName,
+                this.lastName,
+                this.email,
+                this.associations.map { Base64Utils.encodeIdToString(it) },
+                this._id)
     }
 }

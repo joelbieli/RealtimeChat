@@ -1,6 +1,22 @@
+import org.jetbrains.dokka.DokkaBootstrap
+import org.jetbrains.dokka.DokkaConfiguration
+import org.jetbrains.dokka.gradle.DokkaPlugin
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.dokka.gradle.DokkaVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.17")
+    }
+}
+
 plugins {
+    id("org.jetbrains.dokka") version "0.9.17"
     kotlin("jvm") version "1.2.70"
 }
 
@@ -20,7 +36,6 @@ dependencies {
     implementation("org.mindrot", "jbcrypt", "0.4")
     implementation("io.github.microutils", "kotlin-logging", "1.6.10")
     implementation("com.kstruct", "gethostname4j", "0.0.2")
-    implementation("commons-io", "commons-io", "2.6")
     implementation("commons-codec", "commons-codec", "1.11")
     implementation("io.jsonwebtoken", "jjwt-api", "0.10.5")
 
@@ -48,6 +63,11 @@ tasks.withType<Test> {
     useJUnitPlatform {
         includeEngines("spek")
     }
+}
+
+tasks.withType<DokkaTask> {
+    outputFormat = "gfm"
+    outputDirectory = "$rootDir/docs/"
 }
 
 tasks.withType<KotlinCompile> {
