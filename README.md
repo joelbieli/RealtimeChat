@@ -2,8 +2,6 @@
 
 This should in the end be a Realtime Chat application with a Kotlin backend and a Vue.js frontend.
 
-[TOC]
-
 ## Backend Technology
 
 The following libraries were used to construct the backend.
