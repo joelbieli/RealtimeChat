@@ -4,14 +4,22 @@ import chat.addMessage
 import chat.removeMessage
 import io.javalin.Context
 import utils.Base64Utils
-import utils.verify
+import utils.JWTUtils
 
-class MessageHandler {
+/**
+ * This singleton object holds all logic to handle message related requests
+ */
+object MessageHandler {
+    /**
+     * Creates a new message
+     *
+     * @param ctx The request
+     */
     fun newMessage(ctx: Context) {
-        if (!ctx.pathParam("jwt").isBlank()) {
-            if (!ctx.body().isBlank()) {
-                val newMessage = ctx.body<NewMessage>().toMDBMessage()
-                val decodedToken = verify(ctx.pathParam("jwt"))
+        if (!ctx.pathParam("jwt").isBlank()) { // Checks that there is a authentication token
+            if (!ctx.body().isBlank()) { // Checks that the request body isn't empty (i.e. that there is an actual new message)
+                val newMessage = ctx.body<NewMessage>().toMDBMessage() // Deserializes the body to a NewMessage object
+                val decodedToken = JWTUtils.verify(ctx.pathParam("jwt")) // Verifies the requesters identity
 
                 if (decodedToken != null) {
                     newMessage(newMessage)
@@ -32,13 +40,18 @@ class MessageHandler {
         }
     }
 
+    /**
+     * Deletes a message
+     *
+     * @param ctx The request
+     */
     fun deleteMessage(ctx: Context) {
-        if (!ctx.pathParam("jwt").isBlank()) {
-            if (!ctx.pathParam("messageId").isBlank()) {
-                if (!ctx.pathParam("chatId").isBlank()) {
-                    val chatToRemoveMessageFrom = Base64Utils.decodeStringToId(ctx.pathParam("chatId"))
-                    val messageToDelete = Base64Utils.decodeStringToId(ctx.pathParam("messageId"))
-                    val decodedToken = verify(ctx.pathParam("jwt"))
+        if (!ctx.pathParam("jwt").isBlank()) { // Checks that there is a authentication token
+            if (!ctx.pathParam("messageId").isBlank()) { // Checks that a message id was provided
+                if (!ctx.pathParam("chatId").isBlank()) { // Checks that a chat id was provided
+                    val chatToRemoveMessageFrom = Base64Utils.decodeStringToId(ctx.pathParam("chatId")) // Decodes the chat id
+                    val messageToDelete = Base64Utils.decodeStringToId(ctx.pathParam("messageId")) // Decodes the message id
+                    val decodedToken = JWTUtils.verify(ctx.pathParam("jwt")) // Verifies the requesters identity
 
                     if (decodedToken != null) {
                         if (deleteMessage(messageToDelete)) {
@@ -67,13 +80,18 @@ class MessageHandler {
         }
     }
 
+    /**
+     * Updates the content of a message
+     *
+     * @param ctx The request
+     */
     fun editMessage(ctx: Context) {
-        if (!ctx.pathParam("jwt").isBlank()) {
-            if (!ctx.pathParam("messageId").isBlank()) {
-                if (!ctx.body().isBlank()) {
-                    val updateInfo = ctx.body<Map<String, String>>()
-                    val messageToUpdate = Base64Utils.decodeStringToId(ctx.pathParam("chatId"))
-                    val decodedToken = verify(ctx.pathParam("jwt"))
+        if (!ctx.pathParam("jwt").isBlank()) { // Checks that there is a authentication token
+            if (!ctx.pathParam("messageId").isBlank()) { // Checks that a message id was provided
+                if (!ctx.body().isBlank()) { // Checks that the request body isn't empty (i.e. that a new message content was provided)
+                    val updateInfo = ctx.body<Map<String, String>>() // Deserialized the body to a map
+                    val messageToUpdate = Base64Utils.decodeStringToId(ctx.pathParam("chatId")) // Decodes the chat id
+                    val decodedToken = JWTUtils.verify(ctx.pathParam("jwt")) // Verifies the requesters identity
 
                     if (decodedToken != null) {
                         if (updateInfo["newMessage"] == null) {

@@ -1,15 +1,27 @@
 package user
 
 import org.litote.kmongo.Id
-import utils.sign
+import utils.JWTUtils
 
+/**
+ * The class which is read, write and update the users collection of the database
+ *
+ * @param _id The id of the user
+ *
+ * @property displayName The display name, visible to other users
+ * @property status The status message
+ * @property firstName The first name of the user
+ * @property lastName The last name of the user
+ * @property email The email address of the user
+ * @property jwt The JWT of the user
+ */
 class ResponseUser(
         override val displayName: String,
         override val status: String,
-        val firstName: String,
-        val lastName: String,
-        val email: String,
+        private val firstName: String,
+        private val lastName: String,
+        private val email: String,
         _id: Id<String>
 ): User {
-    val jwt: String = sign(_id)
+    private val jwt: String = JWTUtils.sign(_id)
 }

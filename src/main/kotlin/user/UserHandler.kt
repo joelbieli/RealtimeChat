@@ -2,13 +2,18 @@ package user
 
 import io.javalin.Context
 import utils.Base64Utils
-import utils.verify
+import utils.JWTUtils
 
-class UserHandler {
+object UserHandler {
+    /**
+     * Register a new user and log in
+     *
+     * @param ctx The request
+     */
     fun registerNew(ctx: Context) {
-        if (!ctx.body().isBlank()) {
-            val newUserData = ctx.body<MDBUser>()
-            val existingUser = findUserByEmail(newUserData.email)
+        if (!ctx.body().isBlank()) { // Checks that the request body isn't empty (i.e. that there is an actual new user)
+            val newUserData = ctx.body<MDBUser>() // Deserializes the body to a MDBUser object
+            val existingUser = findUserByEmail(newUserData.email) //Check if the user already exists
 
             if (existingUser == null) {
                 newUser(newUserData)
@@ -27,10 +32,15 @@ class UserHandler {
         }
     }
 
+    /**
+     * Log in as an existing user
+     *
+     * @param ctx The request
+     */
     fun login(ctx: Context) {
-        if (!ctx.body().isBlank()) {
-            val userToLogIn = ctx.body<MDBUser>()
-            val existingUser = findUserByEmail(userToLogIn.email)
+        if (!ctx.body().isBlank()) { // Checks that the request body isn't empty (i.e. that login data was provided)
+            val userToLogIn = ctx.body<MDBUser>() // Deserializes the body to a MDBUser object
+            val existingUser = findUserByEmail(userToLogIn.email) //Check if the user actually exists
 
             if (existingUser != null) {
                 if (existingUser.checkPW(userToLogIn.password)) {
@@ -48,13 +58,18 @@ class UserHandler {
         }
     }
 
+    /**
+     * Update the display name of a user
+     *
+     * @param ctx The request
+     */
     fun setNewDisplayName(ctx: Context) {
-        if (!ctx.pathParam("jwt").isBlank()) {
-            if (!ctx.pathParam("userId").isBlank()) {
-                if (!ctx.body().isBlank()) {
-                    val updateInfo = ctx.body<Map<String, String>>()
-                    val userToUpdate = Base64Utils.decodeStringToId(ctx.pathParam("userId"))
-                    val decodedToken = verify(ctx.pathParam("jwt"))
+        if (!ctx.pathParam("jwt").isBlank()) { // Checks that there is a authentication token
+            if (!ctx.pathParam("userId").isBlank()) { // Checks that a user id was provided
+                if (!ctx.body().isBlank()) { // Checks that the request body isn't empty (i.e. that a new display name was provided)
+                    val updateInfo = ctx.body<Map<String, String>>() // Deserialized the body to a map
+                    val userToUpdate = Base64Utils.decodeStringToId(ctx.pathParam("userId")) // Decodes the user id
+                    val decodedToken = JWTUtils.verify(ctx.pathParam("jwt")) // Verifies the requesters identity
 
                     if (decodedToken != null) {
                         if (updateInfo["newDisplayName"] == null) {
@@ -86,13 +101,18 @@ class UserHandler {
         }
     }
 
+    /**
+     * Update the status of a user
+     *
+     * @param ctx The request
+     */
     fun setNewStatus(ctx: Context) {
-        if (!ctx.pathParam("jwt").isBlank()) {
-            if (!ctx.pathParam("userId").isBlank()) {
-                if (!ctx.body().isBlank()) {
-                    val updateInfo = ctx.body<Map<String, String>>()
-                    val userToUpdate = Base64Utils.decodeStringToId(ctx.pathParam("userId"))
-                    val decodedToken = verify(ctx.pathParam("jwt"))
+        if (!ctx.pathParam("jwt").isBlank()) { // Checks that there is a authentication token
+            if (!ctx.pathParam("userId").isBlank()) { // Checks that a user id was provided
+                if (!ctx.body().isBlank()) { // Checks that the request body isn't empty (i.e. that a new status was provided)
+                    val updateInfo = ctx.body<Map<String, String>>() // Deserialized the body to a map
+                    val userToUpdate = Base64Utils.decodeStringToId(ctx.pathParam("userId")) // Decodes the user id
+                    val decodedToken = JWTUtils.verify(ctx.pathParam("jwt")) // Verifies the requesters identity
 
                     if (decodedToken != null) {
                         if (updateInfo["newStatus"] == null) {
